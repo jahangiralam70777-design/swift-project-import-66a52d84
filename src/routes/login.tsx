@@ -67,6 +67,12 @@ function StudentLogin() {
         return;
       }
       toast.success("Welcome back!");
+      // Warm the most-visited student chunks so first navigation is instant.
+      void Promise.all([
+        import("@/components/dashboard/DashContent"),
+        import("@/components/dashboard/ProfileSettingsFlow"),
+        import("@/components/dashboard/NotificationsFlow"),
+      ]).catch(() => undefined);
       navigate({ to: "/dashboard", replace: true });
     } catch (err) {
       toast.error((err as Error).message ?? "Sign-in failed");
