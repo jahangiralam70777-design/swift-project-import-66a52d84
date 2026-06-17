@@ -1,5 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { LiveChatManager } from "@/components/admin/LiveChatManager";
+import { lazy, Suspense } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
+
+const LiveChatManager = lazy(() =>
+  import("@/components/admin/LiveChatManager").then((m) => ({ default: m.LiveChatManager })),
+);
 
 export const Route = createFileRoute("/admin/live-chat")({
   component: LiveChatPage,
@@ -14,7 +19,9 @@ function LiveChatPage() {
           Support Center · Real-time conversations with students
         </p>
       </div>
+      <Suspense fallback={<Skeleton className="h-[60vh] w-full" />}>
       <LiveChatManager />
+    </Suspense>
     </div>
   );
 }

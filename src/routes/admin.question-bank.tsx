@@ -1,5 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { QuestionBankManagerFlow } from "@/components/admin/QuestionBankManagerFlow";
+import { lazy, Suspense } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
+
+const QuestionBankManagerFlow = lazy(() =>
+  import("@/components/admin/QuestionBankManagerFlow").then((m) => ({ default: m.QuestionBankManagerFlow })),
+);
 
 export const Route = createFileRoute("/admin/question-bank")({
   component: AdminQuestionBankPage,
@@ -22,5 +27,7 @@ export const Route = createFileRoute("/admin/question-bank")({
 });
 
 function AdminQuestionBankPage() {
-  return <QuestionBankManagerFlow />;
+  return <Suspense fallback={<Skeleton className="h-[60vh] w-full" />}>
+      <QuestionBankManagerFlow />
+    </Suspense>;
 }

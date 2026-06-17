@@ -1,5 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { NotificationManagerFlow } from "@/components/admin/NotificationManagerFlow";
+import { lazy, Suspense } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
+
+const NotificationManagerFlow = lazy(() =>
+  import("@/components/admin/NotificationManagerFlow").then((m) => ({ default: m.NotificationManagerFlow })),
+);
 
 export const Route = createFileRoute("/admin/notifications")({
   component: AdminNotificationsPage,
@@ -22,5 +27,7 @@ export const Route = createFileRoute("/admin/notifications")({
 });
 
 function AdminNotificationsPage() {
-  return <NotificationManagerFlow />;
+  return <Suspense fallback={<Skeleton className="h-[60vh] w-full" />}>
+      <NotificationManagerFlow />
+    </Suspense>;
 }

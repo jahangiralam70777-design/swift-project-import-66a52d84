@@ -1,5 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { DatabaseManagerFlow } from "@/components/admin/DatabaseManagerFlow";
+import { lazy, Suspense } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
+
+const DatabaseManagerFlow = lazy(() =>
+  import("@/components/admin/DatabaseManagerFlow").then((m) => ({ default: m.DatabaseManagerFlow })),
+);
 
 export const Route = createFileRoute("/admin/database")({
   component: DatabaseManagerPage,
@@ -16,5 +21,7 @@ export const Route = createFileRoute("/admin/database")({
 });
 
 function DatabaseManagerPage() {
-  return <DatabaseManagerFlow />;
+  return <Suspense fallback={<Skeleton className="h-[60vh] w-full" />}>
+      <DatabaseManagerFlow />
+    </Suspense>;
 }
