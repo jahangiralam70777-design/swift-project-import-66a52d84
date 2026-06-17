@@ -9,7 +9,7 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
-import { Suspense, useEffect, useMemo, useRef } from "react";
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { hasLocalAuthSession, useAppStore } from "@/stores/app-store";
 import { useRealtimeInvalidator } from "@/hooks/use-realtime-invalidator";
@@ -25,9 +25,21 @@ import { useNavTiming } from "@/lib/nav-timing";
 import { SkipToContent } from "@/components/a11y/SkipToContent";
 import { LiveRegionProvider } from "@/components/a11y/LiveRegion";
 import { ConfirmDialogHost } from "@/components/ui/confirm-imperative";
-import { WhatsAppFloatingButton } from "@/components/site/WhatsAppFloatingButton";
-import { LiveChatWidget } from "@/components/site/LiveChatWidget";
-import { BroadcastPopup } from "@/components/site/BroadcastPopup";
+
+// Defer always-on floating widgets to a separate chunk that loads after the
+// page is interactive. They don't affect first paint and most visitors on
+// public pages never see them, so paying for them in the root bundle is waste.
+const WhatsAppFloatingButton = lazy(() =>
+  import("@/components/site/WhatsAppFloatingButton").then((m) => ({
+    default: m.WhatsAppFloatingButton,
+  })),
+);
+const LiveChatWidget = lazy(() =>
+  import("@/components/site/LiveChatWidget").then((m) => ({ default: m.LiveChatWidget })),
+);
+const BroadcastPopup = lazy(() =>
+  import("@/components/site/BroadcastPopup").then((m) => ({ default: m.BroadcastPopup })),
+);
 
 import appCss from "../styles.css?url";
 
