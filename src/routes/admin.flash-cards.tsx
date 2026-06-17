@@ -1,5 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { FlashCardManagerFlow } from "@/components/admin/FlashCardManagerFlow";
+import { lazy, Suspense } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
+
+const FlashCardManagerFlow = lazy(() =>
+  import("@/components/admin/FlashCardManagerFlow").then((m) => ({ default: m.FlashCardManagerFlow })),
+);
 
 export const Route = createFileRoute("/admin/flash-cards")({
   component: AdminFlashCardsPage,
@@ -22,5 +27,7 @@ export const Route = createFileRoute("/admin/flash-cards")({
 });
 
 function AdminFlashCardsPage() {
-  return <FlashCardManagerFlow />;
+  return <Suspense fallback={<Skeleton className="h-[60vh] w-full" />}>
+      <FlashCardManagerFlow />
+    </Suspense>;
 }

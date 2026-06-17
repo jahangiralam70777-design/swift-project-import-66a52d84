@@ -1,5 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { AnalyticsReportsFlow } from "@/components/admin/AnalyticsReportsFlow";
+import { lazy, Suspense } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
+
+const AnalyticsReportsFlow = lazy(() =>
+  import("@/components/admin/AnalyticsReportsFlow").then((m) => ({ default: m.AnalyticsReportsFlow })),
+);
 
 export const Route = createFileRoute("/admin/analytics")({
   component: AdminAnalyticsPage,
@@ -22,5 +27,7 @@ export const Route = createFileRoute("/admin/analytics")({
 });
 
 function AdminAnalyticsPage() {
-  return <AnalyticsReportsFlow />;
+  return <Suspense fallback={<Skeleton className="h-[60vh] w-full" />}>
+      <AnalyticsReportsFlow />
+    </Suspense>;
 }

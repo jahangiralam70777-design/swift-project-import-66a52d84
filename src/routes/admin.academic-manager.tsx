@@ -1,5 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { AcademicStructureManager } from "@/components/admin/AcademicStructureManager";
+import { lazy, Suspense } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
+
+const AcademicStructureManager = lazy(() =>
+  import("@/components/admin/AcademicStructureManager").then((m) => ({ default: m.AcademicStructureManager })),
+);
 
 export const Route = createFileRoute("/admin/academic-manager")({
   component: AcademicManagerPage,
@@ -22,5 +27,7 @@ export const Route = createFileRoute("/admin/academic-manager")({
 });
 
 function AcademicManagerPage() {
-  return <AcademicStructureManager />;
+  return <Suspense fallback={<Skeleton className="h-[60vh] w-full" />}>
+      <AcademicStructureManager />
+    </Suspense>;
 }

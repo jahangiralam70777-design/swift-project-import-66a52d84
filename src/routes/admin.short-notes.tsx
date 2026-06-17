@@ -1,5 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ShortNotesManagerFlow } from "@/components/admin/ShortNotesManagerFlow";
+import { lazy, Suspense } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
+
+const ShortNotesManagerFlow = lazy(() =>
+  import("@/components/admin/ShortNotesManagerFlow").then((m) => ({ default: m.ShortNotesManagerFlow })),
+);
 
 export const Route = createFileRoute("/admin/short-notes")({
   component: AdminShortNotesPage,
@@ -22,5 +27,7 @@ export const Route = createFileRoute("/admin/short-notes")({
 });
 
 function AdminShortNotesPage() {
-  return <ShortNotesManagerFlow />;
+  return <Suspense fallback={<Skeleton className="h-[60vh] w-full" />}>
+      <ShortNotesManagerFlow />
+    </Suspense>;
 }

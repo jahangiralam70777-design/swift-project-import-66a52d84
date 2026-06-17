@@ -1,5 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { AdminSettingsFlow } from "@/components/admin/AdminSettingsFlow";
+import { lazy, Suspense } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
+
+const AdminSettingsFlow = lazy(() =>
+  import("@/components/admin/AdminSettingsFlow").then((m) => ({ default: m.AdminSettingsFlow })),
+);
 
 export const Route = createFileRoute("/admin/settings")({
   component: AdminSettingsPage,
@@ -22,5 +27,7 @@ export const Route = createFileRoute("/admin/settings")({
 });
 
 function AdminSettingsPage() {
-  return <AdminSettingsFlow />;
+  return <Suspense fallback={<Skeleton className="h-[60vh] w-full" />}>
+      <AdminSettingsFlow />
+    </Suspense>;
 }

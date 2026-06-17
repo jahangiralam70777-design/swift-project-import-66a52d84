@@ -1,5 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { SiteEditorV2Flow } from "@/components/admin/site-editor-v2/SiteEditorV2Flow";
+import { lazy, Suspense } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
+
+const SiteEditorV2Flow = lazy(() =>
+  import("@/components/admin/site-editor-v2/SiteEditorV2Flow").then((m) => ({ default: m.SiteEditorV2Flow })),
+);
 
 export const Route = createFileRoute("/admin/site-editor")({
   component: SiteEditorV2Page,
@@ -16,5 +21,7 @@ export const Route = createFileRoute("/admin/site-editor")({
 });
 
 function SiteEditorV2Page() {
-  return <SiteEditorV2Flow />;
+  return <Suspense fallback={<Skeleton className="h-[60vh] w-full" />}>
+      <SiteEditorV2Flow />
+    </Suspense>;
 }

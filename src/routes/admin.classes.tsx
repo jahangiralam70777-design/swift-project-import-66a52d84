@@ -1,5 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { VideoClassesManagerFlow } from "@/components/admin/VideoClassesManagerFlow";
+import { lazy, Suspense } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
+
+const VideoClassesManagerFlow = lazy(() =>
+  import("@/components/admin/VideoClassesManagerFlow").then((m) => ({ default: m.VideoClassesManagerFlow })),
+);
 
 export const Route = createFileRoute("/admin/classes")({
   component: AdminClassesPage,
@@ -22,5 +27,7 @@ export const Route = createFileRoute("/admin/classes")({
 });
 
 function AdminClassesPage() {
-  return <VideoClassesManagerFlow />;
+  return <Suspense fallback={<Skeleton className="h-[60vh] w-full" />}>
+      <VideoClassesManagerFlow />
+    </Suspense>;
 }

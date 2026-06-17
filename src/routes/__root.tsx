@@ -9,7 +9,7 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
-import { Suspense, useEffect, useMemo, useRef } from "react";
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { hasLocalAuthSession, useAppStore } from "@/stores/app-store";
 import { useRealtimeInvalidator } from "@/hooks/use-realtime-invalidator";
@@ -25,9 +25,21 @@ import { useNavTiming } from "@/lib/nav-timing";
 import { SkipToContent } from "@/components/a11y/SkipToContent";
 import { LiveRegionProvider } from "@/components/a11y/LiveRegion";
 import { ConfirmDialogHost } from "@/components/ui/confirm-imperative";
-import { WhatsAppFloatingButton } from "@/components/site/WhatsAppFloatingButton";
-import { LiveChatWidget } from "@/components/site/LiveChatWidget";
-import { BroadcastPopup } from "@/components/site/BroadcastPopup";
+
+// Defer always-on floating widgets to a separate chunk that loads after the
+// page is interactive. They don't affect first paint and most visitors on
+// public pages never see them, so paying for them in the root bundle is waste.
+const WhatsAppFloatingButton = lazy(() =>
+  import("@/components/site/WhatsAppFloatingButton").then((m) => ({
+    default: m.WhatsAppFloatingButton,
+  })),
+);
+const LiveChatWidget = lazy(() =>
+  import("@/components/site/LiveChatWidget").then((m) => ({ default: m.LiveChatWidget })),
+);
+const BroadcastPopup = lazy(() =>
+  import("@/components/site/BroadcastPopup").then((m) => ({ default: m.BroadcastPopup })),
+);
 
 import appCss from "../styles.css?url";
 
@@ -307,9 +319,37 @@ function RootInner() {
       <ActivityTracker />
       <Outlet />
       <ConfirmDialogHost />
+      <DeferredWidgets userRole={user?.role} />
+    </Suspense>
+  );
+}
+
+// Mount floating widgets only after the page is idle / interactive so they
+// never delay first paint or block the route content from rendering.
+function DeferredWidgets({ userRole }: { userRole?: string | null }) {
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const w = window as Window & {
+      requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
+      cancelIdleCallback?: (id: number) => void;
+    };
+    if (w.requestIdleCallback) {
+      const id = w.requestIdleCallback(() => setReady(true), { timeout: 2500 });
+      return () => w.cancelIdleCallback?.(id);
+    }
+    const t = window.setTimeout(() => setReady(true), 1500);
+    return () => window.clearTimeout(t);
+  }, []);
+
+  if (!ready) return null;
+  const isStudent = userRole === "student";
+  return (
+    <Suspense fallback={null}>
       <WhatsAppFloatingButton />
-      {user?.role === "student" ? <LiveChatWidget /> : null}
-      {user?.role === "student" ? <BroadcastPopup /> : null}
+      {isStudent ? <LiveChatWidget /> : null}
+      {isStudent ? <BroadcastPopup /> : null}
     </Suspense>
   );
 }
