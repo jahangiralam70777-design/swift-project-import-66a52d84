@@ -1,5 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { NotificationsFlow } from "@/components/dashboard/NotificationsFlow";
+import { lazy, Suspense } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
+
+const NotificationsFlow = lazy(() =>
+  import("@/components/dashboard/NotificationsFlow").then((m) => ({
+    default: m.NotificationsFlow,
+  })),
+);
 
 export const Route = createFileRoute("/_student/notifications")({
   component: NotificationsPage,
@@ -22,5 +29,9 @@ export const Route = createFileRoute("/_student/notifications")({
 });
 
 function NotificationsPage() {
-  return <NotificationsFlow />;
+  return (
+    <Suspense fallback={<Skeleton className="h-[60vh] w-full rounded-3xl" />}>
+      <NotificationsFlow />
+    </Suspense>
+  );
 }

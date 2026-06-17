@@ -1,6 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ShortNotesFlow } from "@/components/dashboard/ShortNotesFlow";
+import { lazy, Suspense } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 import { HiddenModuleGuard } from "@/components/dashboard/HiddenModuleGuard";
+
+const ShortNotesFlow = lazy(() =>
+  import("@/components/dashboard/ShortNotesFlow").then((m) => ({ default: m.ShortNotesFlow })),
+);
 
 export const Route = createFileRoute("/_student/short-notes")({
   component: ShortNotesPage,
@@ -25,7 +30,9 @@ export const Route = createFileRoute("/_student/short-notes")({
 function ShortNotesPage() {
   return (
     <HiddenModuleGuard moduleKey="short_notes">
-      <ShortNotesFlow />
+      <Suspense fallback={<Skeleton className="h-[60vh] w-full rounded-3xl" />}>
+        <ShortNotesFlow />
+      </Suspense>
     </HiddenModuleGuard>
   );
 }

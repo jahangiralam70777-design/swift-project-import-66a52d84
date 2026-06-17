@@ -1,6 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { QuestionBankFlow } from "@/components/dashboard/QuestionBankFlow";
+import { lazy, Suspense } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 import { HiddenModuleGuard } from "@/components/dashboard/HiddenModuleGuard";
+
+const QuestionBankFlow = lazy(() =>
+  import("@/components/dashboard/QuestionBankFlow").then((m) => ({
+    default: m.QuestionBankFlow,
+  })),
+);
 
 export const Route = createFileRoute("/_student/qns-bank")({
   component: QnsBankPage,
@@ -25,7 +32,9 @@ export const Route = createFileRoute("/_student/qns-bank")({
 function QnsBankPage() {
   return (
     <HiddenModuleGuard moduleKey="qns_bank">
-      <QuestionBankFlow />
+      <Suspense fallback={<Skeleton className="h-[60vh] w-full rounded-3xl" />}>
+        <QuestionBankFlow />
+      </Suspense>
     </HiddenModuleGuard>
   );
 }

@@ -12,9 +12,10 @@ export const getRouter = () => {
     defaultOptions: {
       queries: {
         // Reuse cached data across navigations — keeps page switches instant.
-        staleTime: 60_000,
-        gcTime: 5 * 60_000,
+        staleTime: 5 * 60_000,
+        gcTime: 30 * 60_000,
         refetchOnWindowFocus: false,
+        refetchOnMount: false,
         // Auto-recover when the network comes back without forcing a refresh.
         refetchOnReconnect: "always",
         // 3 retries with exponential backoff (capped at 5s) — but skip retrying

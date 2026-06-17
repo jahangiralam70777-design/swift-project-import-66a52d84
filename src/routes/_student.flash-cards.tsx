@@ -1,6 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { FlashCardsFlow } from "@/components/dashboard/FlashCardsFlow";
+import { lazy, Suspense } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 import { HiddenModuleGuard } from "@/components/dashboard/HiddenModuleGuard";
+
+const FlashCardsFlow = lazy(() =>
+  import("@/components/dashboard/FlashCardsFlow").then((m) => ({ default: m.FlashCardsFlow })),
+);
 
 export const Route = createFileRoute("/_student/flash-cards")({
   component: FlashCardsPage,
@@ -25,7 +30,9 @@ export const Route = createFileRoute("/_student/flash-cards")({
 function FlashCardsPage() {
   return (
     <HiddenModuleGuard moduleKey="flash_cards">
-      <FlashCardsFlow />
+      <Suspense fallback={<Skeleton className="h-[60vh] w-full rounded-3xl" />}>
+        <FlashCardsFlow />
+      </Suspense>
     </HiddenModuleGuard>
   );
 }

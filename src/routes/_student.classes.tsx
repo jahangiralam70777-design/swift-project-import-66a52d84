@@ -1,6 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { VideoClassesFlow } from "@/components/dashboard/VideoClassesFlow";
+import { lazy, Suspense } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 import { HiddenModuleGuard } from "@/components/dashboard/HiddenModuleGuard";
+
+const VideoClassesFlow = lazy(() =>
+  import("@/components/dashboard/VideoClassesFlow").then((m) => ({ default: m.VideoClassesFlow })),
+);
 
 export const Route = createFileRoute("/_student/classes")({
   component: ClassesPage,
@@ -25,7 +30,9 @@ export const Route = createFileRoute("/_student/classes")({
 function ClassesPage() {
   return (
     <HiddenModuleGuard moduleKey="classes">
-      <VideoClassesFlow />
+      <Suspense fallback={<Skeleton className="h-[60vh] w-full rounded-3xl" />}>
+        <VideoClassesFlow />
+      </Suspense>
     </HiddenModuleGuard>
   );
 }

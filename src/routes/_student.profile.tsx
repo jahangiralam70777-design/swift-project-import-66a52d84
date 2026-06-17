@@ -1,5 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ProfileSettingsFlow } from "@/components/dashboard/ProfileSettingsFlow";
+import { lazy, Suspense } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
+
+const ProfileSettingsFlow = lazy(() =>
+  import("@/components/dashboard/ProfileSettingsFlow").then((m) => ({
+    default: m.ProfileSettingsFlow,
+  })),
+);
 
 export const Route = createFileRoute("/_student/profile")({
   component: ProfilePage,
@@ -22,5 +29,9 @@ export const Route = createFileRoute("/_student/profile")({
 });
 
 function ProfilePage() {
-  return <ProfileSettingsFlow />;
+  return (
+    <Suspense fallback={<Skeleton className="h-[60vh] w-full rounded-3xl" />}>
+      <ProfileSettingsFlow />
+    </Suspense>
+  );
 }
